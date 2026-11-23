@@ -141,6 +141,33 @@ body {
   text-transform: uppercase;
   color: var(--accent-text);
 }
+/* Home hero: the pitch's line is longer than a display line, so it runs a step
+   smaller to stay on two lines beside the canvas (DESIGN.md, Typography). */
+.display-hero {
+  font-size: clamp(2.75rem, 4.6vw, 4.5rem);
+}
+
+/* Chips: small pill labels (process timings, partner facts). */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.chip-accent {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--on-accent);
+}
 
 /* Buttons */
 .btn {
@@ -201,10 +228,26 @@ body {
   to { transform: translateX(-100%); }
 }
 
-/* Sticky stacking cards (service pages) */
+/* Sticky stacking cards (capability pages) */
 .stack-card {
   position: sticky;
   top: calc(112px + var(--i, 0) * 20px);
+}
+
+/* Stacked stages (home capabilities). An ordinary stack by default; on large,
+   tall screens each stage pins and the next slides over it. StackedStages.tsx
+   uses the same media query for the recede effect. */
+.stage {
+  position: relative;
+  transform-origin: top center;
+}
+.stage-stack > .stage + div { margin-top: 32px; }
+@media (min-width: 1024px) and (min-height: 760px) and (prefers-reduced-motion: no-preference) {
+  .stage {
+    position: sticky;
+    top: calc(104px + var(--i, 0) * 18px);
+  }
+  .stage-stack { padding-bottom: 12vh; }
 }
 
 /* Horizontal pan: native scroller by default, pinned by GSAP when allowed. */
@@ -214,11 +257,115 @@ body {
   scrollbar-width: none;
 }
 .pan-wrap::-webkit-scrollbar { display: none; }
-.pan-wrap[data-pinned="true"] {
+.pan[data-pinned="true"] .pan-wrap {
   overflow: hidden;
   scroll-snap-type: none;
 }
 .pan-panel { scroll-snap-align: center; }
+/* Progress rail: only meaningful while pinned, so hidden otherwise. */
+.pan-rail-shell {
+  display: none;
+  margin-top: 2.5rem;
+}
+.pan[data-pinned="true"] .pan-rail-shell { display: block; }
+.pan-rail {
+  position: relative;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--line);
+}
+.pan-rail-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+/* Project index: a marker that slides to the chapter being read. Rows are 4rem. */
+.index-marker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  width: 2px;
+  height: 4rem;
+  background: var(--accent);
+  transition: transform var(--duration-slow) var(--ease-smooth-out);
+}
+
+/* Partner orbit: the logo inside the nest, circled by one cyan and one
+   off-white point. Sits on an art panel, so the colours are fixed. */
+.orbit {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(100%, 288px);
+  aspect-ratio: 1;
+}
+.orbit-logo {
+  position: relative;
+  width: 61%;
+  height: auto;
+  border-radius: 999px;
+  box-shadow: 0 22px 50px -18px rgb(5 10 13 / 0.7);
+}
+.orbit-ring {
+  position: absolute;
+  border: 1px solid color-mix(in srgb, var(--on-art) 16%, transparent);
+  border-radius: 999px;
+  animation: orbit-spin 28s linear infinite;
+}
+.orbit-ring-outer { inset: 0; }
+.orbit-ring-inner {
+  inset: 12%;
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--on-art) 12%, transparent);
+  animation-duration: 19s;
+  animation-direction: reverse;
+}
+.orbit-dot {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  border-radius: 999px;
+}
+.orbit-dot-accent {
+  background: var(--accent);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.orbit-dot-light { background: var(--on-art); }
+@keyframes orbit-spin {
+  to { transform: rotate(1turn); }
+}
+
+/* Comparison: the AlgoNest column fills in, row by row, when the table is shown. */
+.compare .compare-us {
+  position: relative;
+  isolation: isolate;
+}
+.compare .compare-us::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in oklab, var(--accent) 11%, transparent);
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform var(--duration-very-slow) var(--ease-smooth-out);
+  transition-delay: calc(var(--i, 0) * 90ms);
+}
+.compare.is-shown .compare-us::before { transform: scaleY(1); }
+
+/* A capability card reached through a link to its anchor (old service URLs). */
+.include:target {
+  border-color: var(--accent-text);
+  box-shadow: inset 0 0 0 1px var(--accent-text);
+}
 
 /* Dark panel behind the hero motion graphics. Same in both themes. */
 .art-panel {
@@ -317,6 +464,9 @@ html.has-cursor select { cursor: pointer; }
   html { scroll-behavior: auto; }
   .marquee-track { animation: none; }
   .btn { transition: none; }
+  .orbit-ring { animation: none; }
+  .index-marker { transition: none; }
+  .compare .compare-us::before { transition: none; }
 }
 
 }

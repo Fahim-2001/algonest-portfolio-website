@@ -10,7 +10,7 @@ export default function NotFound() {
           Go to the home page
         </Link>
         <Link href="/services/" className="btn btn-secondary">
-          See services
+          See our services
         </Link>
       </div>
     </section>

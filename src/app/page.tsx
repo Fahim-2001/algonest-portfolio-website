@@ -1,96 +1,128 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowsClockwise, PuzzlePiece, ShieldCheck, UsersThree } from "@phosphor-icons/react/dist/ssr";
+import { Accent } from "@/components/Accent";
 import { ArrowLink } from "@/components/ArrowLink";
+import { Compare } from "@/components/Compare";
+import { Coverage } from "@/components/Coverage";
 import { Cta } from "@/components/Cta";
 import { HeroCanvas } from "@/components/HeroCanvas";
-import { HorizontalPan } from "@/components/HorizontalPan";
-import { Process } from "@/components/Process";
+import { WHY_ICONS } from "@/components/icons";
+import { OfferStrip } from "@/components/OfferStrip";
+import { Partners } from "@/components/Partners";
+import { ProcessPan } from "@/components/ProcessPan";
+import { ProjectGlimpse } from "@/components/ProjectGlimpse";
+import { Reality } from "@/components/Reality";
 import { Reveal } from "@/components/Reveal";
 import { ScrollWords } from "@/components/ScrollWords";
+import { ServiceStage } from "@/components/ServiceStage";
+import { StackedStages } from "@/components/StackedStages";
 import { TiltCard } from "@/components/TiltCard";
-import { services } from "@/content/services";
-import { home, site } from "@/content/site";
+import { capabilities, services } from "@/content/capabilities";
+import { projects } from "@/content/projects";
+import { home, projectsPage, site } from "@/content/site";
 
 const i = (n: number) => ({ "--i": n }) as React.CSSProperties;
 
+// Bento: two artwork cells, one accent cell, one plain cell.
+const BENTO = [
+  { span: "md:col-span-7", art: "/art/technical-team-hiring.webp" },
+  { span: "md:col-span-5", art: null },
+  { span: "md:col-span-5", art: null, accent: true },
+  { span: "md:col-span-7", art: "/art/data-driven-solutions.webp" },
+];
+
 export default function HomePage() {
   const { hero, why } = home;
-  const whyIcons = [PuzzlePiece, UsersThree, ShieldCheck, ArrowsClockwise];
 
   return (
     <>
-      {/* Hero: asymmetric split */}
-      <section className="shell grid min-h-[100dvh] items-center gap-10 pb-12 pt-28 lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)] lg:gap-12 lg:pt-24">
-        <Reveal amount={0}>
-          <h1 className="display">
-            {hero.lines.map((line, n) => (
-              <span key={line} className="t-stagger-line" style={i(n)}>
-                {line.includes(hero.accentWord) ? (
-                  <>
-                    {line.replace(hero.accentWord, "")}
-                    <span className="text-accent-text">{hero.accentWord}</span>
-                  </>
-                ) : (
-                  line
-                )}
-              </span>
-            ))}
-          </h1>
-          <p className="lead t-stagger-line mt-7 max-w-[46ch]" style={i(3)}>
-            {hero.sub}
-          </p>
-          <div className="t-stagger-line mt-9 flex flex-wrap gap-3" style={i(5)}>
-            <Link href={site.cta.href} className="btn btn-primary">
-              {site.cta.label}
-            </Link>
-            <Link href={hero.secondary.href} className="btn btn-secondary">
-              {hero.secondary.label}
-            </Link>
+      {/* Hero: asymmetric split with live canvas, the offer along its foot */}
+      <section className="flex min-h-[100dvh] flex-col">
+        <div className="shell grid flex-1 items-center gap-10 pb-12 pt-28 lg:grid-cols-[minmax(0,1fr)_minmax(0,360px)] lg:gap-12 lg:pt-24 xl:grid-cols-[minmax(0,1fr)_minmax(0,430px)]">
+          <Reveal amount={0}>
+            <h1 className="display display-hero">
+              {hero.lines.map((line, n) => (
+                <span key={line} className="t-stagger-line" style={i(n)}>
+                  <Accent text={line} accent={hero.accent} />
+                </span>
+              ))}
+            </h1>
+            <p className="lead t-stagger-line mt-7 max-w-[46ch]" style={i(3)}>
+              {hero.sub}
+            </p>
+            <div className="t-stagger-line mt-9 flex flex-wrap gap-3" style={i(5)}>
+              <Link href={site.cta.href} className="btn btn-primary">
+                {site.cta.label}
+              </Link>
+              <Link href={hero.secondary.href} className="btn btn-secondary">
+                {hero.secondary.label}
+              </Link>
+            </div>
+          </Reveal>
+          <div className="mx-auto aspect-square w-full max-w-[420px] overflow-hidden rounded-[20px] border border-line bg-surface lg:max-w-none">
+            <HeroCanvas src="/logo.jpeg" />
           </div>
-        </Reveal>
-        <div className="mx-auto aspect-square w-full max-w-[420px] overflow-hidden rounded-[20px] border border-line bg-surface lg:max-w-none">
-          <HeroCanvas src="/logo.jpeg" />
         </div>
+        <OfferStrip items={home.offer} label={home.offerLabel} />
       </section>
 
-      {/* Statement: scroll-scrubbed text */}
-      <section className="shell py-24 md:py-36">
-        <p className="label">Business smarter with AlgoNest</p>
+      {/* Reality: three-column ledger */}
+      <Reality />
+
+      {/* Statement: scroll-scrubbed answer to the reality above */}
+      <section className="shell pb-24 pt-4 md:pb-36 md:pt-8">
         <ScrollWords
-          text={home.statement}
-          className="mt-6 max-w-[26em] text-[clamp(1.5rem,3.1vw,2.75rem)] font-medium leading-[1.2] tracking-[-0.02em]"
+          text={home.statement.text}
+          accent={home.statement.accent}
+          className="max-w-[26em] text-[clamp(1.5rem,3.1vw,2.75rem)] font-medium leading-[1.2] tracking-[-0.02em]"
         />
       </section>
 
-      {/* Services: pinned horizontal pan */}
-      <HorizontalPan label="Services" header={<h2 className="h2">{home.servicesHeading}</h2>}>
-        {services.map((s) => (
-          <article
-            key={s.slug}
-            className="pan-panel grid w-[min(86vw,920px)] shrink-0 overflow-hidden rounded-[20px] border border-line bg-surface md:grid-cols-2 lg:h-[min(60dvh,540px)]"
-          >
-            <div className="relative aspect-[4/3] bg-slate md:aspect-auto">
-              <Image src={s.art} alt="" fill sizes="(min-width: 768px) 460px, 86vw" className="object-cover" />
-            </div>
-            <div className="flex flex-col justify-between gap-8 p-7 md:p-10">
-              <div>
-                <h3 className="h3">{s.name}</h3>
-                <p className="mt-4 text-muted">{s.summary}</p>
-              </div>
-              <ArrowLink href={`/${s.slug}/`}>
-                See details<span className="sr-only">: {s.name}</span>
-              </ArrowLink>
-            </div>
-          </article>
-        ))}
-      </HorizontalPan>
+      {/* Our services: the five services as stacked stages, each tagged with its focus */}
+      <section className="pb-20 md:pb-24" aria-labelledby="services-heading">
+        <div className="shell">
+          <p className="label">{home.capabilities.eyebrow}</p>
+          <h2 id="services-heading" className="h2 mt-4">
+            <Accent text={home.capabilities.heading} accent={home.capabilities.accent} />
+          </h2>
+          <p className="lead mt-6">{home.capabilities.lead}</p>
+          <div className="mt-10 rounded-[20px] border border-accent/40 bg-surface p-6 md:p-8">
+            <p className="label">{home.capabilities.focusLabel}</p>
+            <ol className="mt-5 grid gap-5 md:grid-cols-2 md:gap-10">
+              {home.capabilities.focus.map((f, n) => (
+                <li key={f} className="grid grid-cols-[2.25rem_minmax(0,1fr)] items-baseline">
+                  <span className="font-mono text-sm text-accent-text">{String(n + 1).padStart(2, "0")}</span>
+                  <span className="text-xl font-semibold leading-snug tracking-[-0.02em] md:text-2xl">{f}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+        <div className="shell mt-12 md:mt-16">
+          <StackedStages>
+            {services.map((svc, n) => {
+              const focus = capabilities.find((c) => c.slug === svc.focus);
+              return (
+                <ServiceStage
+                  key={svc.id}
+                  service={svc}
+                  position={n + 1}
+                  total={services.length}
+                  focusTag={focus ? `${home.capabilities.focusTag} ${focus.index}` : home.capabilities.bothTag}
+                  explore={home.capabilities.exploreService}
+                  flip={n % 2 === 1}
+                />
+              );
+            })}
+          </StackedStages>
+        </div>
+      </section>
 
-      {/* Capabilities: the page's one marquee */}
+      {/* The page's one marquee */}
       <div className="marquee border-y border-line py-7" aria-hidden="true">
         {[0, 1].map((n) => (
           <ul key={n} className="marquee-track">
-            {home.capabilities.map((c) => (
+            {home.marquee.map((c) => (
               <li key={c} className="flex items-center whitespace-nowrap text-xl text-muted md:text-2xl">
                 {c}
                 <span className="mx-7 inline-block h-5 w-px rotate-[32deg] bg-accent" />
@@ -100,35 +132,70 @@ export default function HomePage() {
         ))}
       </div>
 
-      <Process heading={home.process.heading} tabs={home.process.tabs} />
+      {/* Projects: a glimpse, the preview pinned beside the list */}
+      <section className="shell py-24 md:py-36" aria-labelledby="projects-heading">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-end lg:gap-14">
+          <h2 id="projects-heading" className="h2 max-w-[14ch]">
+            <Accent text={home.projects.heading} accent={home.projects.accent} />
+          </h2>
+          <p className="lead">{home.projects.lead}</p>
+        </div>
+        <div className="mt-12 md:mt-16">
+          <ProjectGlimpse
+            label={home.projects.listLabel}
+            items={projects.map((p) => ({
+              id: p.id,
+              name: p.name,
+              tagline: p.tagline,
+              sector: p.sector,
+              status: p.status,
+              shot: p.shot,
+              scene: p.scene,
+              statusLabel: projectsPage.status[p.status],
+              address: p.link?.label ?? projectsPage.privateBuild,
+              isPublic: !!p.link,
+            }))}
+          />
+        </div>
+        <ArrowLink href="/projects/" className="mt-10">
+          {home.projects.link}
+        </ArrowLink>
+      </section>
 
-      {/* Why AlgoNest: bento */}
-      <section className="shell py-24 md:py-36">
-        <h2 className="h2">{why.heading}</h2>
+      {/* Process: pinned horizontal pan */}
+      <ProcessPan />
+
+      {/* Why AlgoNest: asymmetric bento, then the comparison */}
+      <section className="shell py-24 md:py-36" aria-labelledby="why-heading">
+        <p className="label">{why.eyebrow}</p>
+        <h2 id="why-heading" className="h2 mt-4 max-w-[16ch]">
+          <Accent text={why.heading} accent={why.accent} />
+        </h2>
         <Reveal className="mt-12 grid gap-5 md:grid-cols-12">
           {why.items.map((item, n) => {
-            const Icon = whyIcons[n];
-            const span = n === 0 || n === 3 ? "md:col-span-7" : "md:col-span-5";
-            const art = n === 0 ? "/art/tailored-software-development.webp" : n === 3 ? "/art/automation.webp" : null;
-            const tone = art
+            const Icon = WHY_ICONS[n];
+            const cell = BENTO[n];
+            const tone = cell.art
               ? "bg-slate text-on-art"
-              : n === 2
+              : cell.accent
                 ? "bg-accent text-on-accent"
                 : "border border-line bg-surface";
             return (
-              <div key={item.title} className={`t-stagger-line ${span}`} style={i(n)}>
+              <div key={item.title} className={`t-stagger-line ${cell.span}`} style={i(n)}>
                 <TiltCard className="h-full">
-                  <div className={`relative flex min-h-[280px] flex-col justify-between p-8 md:min-h-[320px] md:p-10 ${tone}`}>
-                    {art && (
+                  <div className={`relative flex min-h-[280px] flex-col justify-between gap-10 p-8 md:min-h-[320px] md:p-10 ${tone}`}>
+                    {cell.art && (
                       <>
-                        <Image src={art} alt="" fill sizes="(min-width: 768px) 60vw, 100vw" className="object-cover opacity-45" />
+                        <Image src={cell.art} alt="" fill sizes="(min-width: 768px) 60vw, 100vw" className="object-cover opacity-45" />
                         <div className="absolute inset-0 bg-gradient-to-t from-[var(--slate)] via-transparent to-transparent" />
                       </>
                     )}
                     <Icon size={36} weight="light" aria-hidden="true" className="relative" />
                     <div className="relative">
-                      <h3 className="h3">{item.title}</h3>
-                      <p className={`mt-3 max-w-[40ch] ${art ? "text-on-art" : n === 2 ? "" : "text-muted"}`}>{item.body}</p>
+                      <h3 className="h3 max-w-[22ch]">{item.title}</h3>
+                      <p className={`mt-3 max-w-[44ch] ${cell.art ? "text-on-art" : cell.accent ? "" : "text-muted"}`}>
+                        {item.body}
+                      </p>
                     </div>
                   </div>
                 </TiltCard>
@@ -136,7 +203,14 @@ export default function HomePage() {
             );
           })}
         </Reveal>
+        <Compare />
       </section>
+
+      {/* Partners: spotlight */}
+      <Partners />
+
+      {/* Global coverage: Bangladesh, the US and Australia on a dot map */}
+      <Coverage />
 
       <Cta />
     </>

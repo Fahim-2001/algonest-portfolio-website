@@ -1,6 +1,7 @@
 """Render the "Lattice Calm" artwork set into public/art.
 
-Usage: python3 scripts/generate-art.py
+Usage: python3 scripts/generate-art.py            # the whole set
+       python3 scripts/generate-art.py platform   # named pieces only
 Requires: numpy, Pillow. See docs/art-philosophy.md.
 """
 from __future__ import annotations
@@ -279,6 +280,129 @@ def art_cta():
     finish(merge(img, over), "cta")
 
 
+# 8. Platform: modules feed streams of work into a reading. Software, automation
+#    and data in one field, for the second capability.
+def art_platform():
+    rng = np.random.default_rng(83)
+    img = ground(8, glow=(0.5, 0.5), strength=0.6)
+    over, d = layer(img)
+
+    # Zones: modules on the left, a reading on the right, streams between.
+    lx0, lx1 = 0.08 * W * S, 0.37 * W * S
+    rx0, rx1 = 0.63 * W * S, 0.92 * W * S
+    y0, y1 = 0.2 * H * S, 0.8 * H * S
+
+    cells = []
+
+    def split(x, y, w, h, depth):
+        small = min(w, h) < 58 * S
+        if depth == 0 or small or (depth < 3 and rng.random() < 0.18):
+            cells.append((x, y, w, h))
+            return
+        r = float(rng.choice([0.382, 0.5, 0.618]))
+        if w > h * 1.1 or (abs(w - h) < h * 0.1 and rng.random() < 0.5):
+            split(x, y, w * r, h, depth - 1)
+            split(x + w * r, y, w * (1 - r), h, depth - 1)
+        else:
+            split(x, y, w, h * r, depth - 1)
+            split(x, y + h * r, w, h * (1 - r), depth - 1)
+
+    split(lx0, y0, lx1 - lx0, y1 - y0, 6)
+
+    # The reading: column heights from a smooth rule.
+    cols, rows = 30, 38
+    stepx = (rx1 - rx0) / (cols - 1)
+    stepy = (y1 - y0) / (rows - 1)
+    heights = []
+    for c in range(cols):
+        t = c / (cols - 1)
+        v = (
+            0.44
+            + 0.2 * math.sin(2 * math.pi * (t * 1.1 + 0.15))
+            + 0.11 * math.sin(2 * math.pi * (t * 2.9 + 0.5))
+            + 0.05 * math.sin(2 * math.pi * (t * 7.3))
+            + 0.18 * t
+        )
+        heights.append(max(3, min(rows, int(v * rows))))
+
+    def crest(c):
+        return rx0 + c * stepx, y1 - (heights[c] - 1) * stepy
+
+    # Streams: a woven band of S-curves between the zones.
+    def curve(ax, ay, bx, by, n=90):
+        mx = (ax + bx) / 2
+        pts = []
+        for k in range(n + 1):
+            t = k / n
+            u = 1 - t
+            x = u * u * u * ax + 3 * u * u * t * mx + 3 * u * t * t * mx + t * t * t * bx
+            y = u * u * u * ay + 3 * u * u * t * ay + 3 * u * t * t * by + t * t * t * by
+            pts.append((x, y))
+        return pts
+
+    sx0, sx1 = lx1 + 14 * S, rx0 - 18 * S
+    for k in range(150):
+        ay = float(rng.uniform(y0 + 0.04 * (y1 - y0), y1 - 0.04 * (y1 - y0)))
+        by = float(rng.uniform(y0 + 0.04 * (y1 - y0), y1 - 0.04 * (y1 - y0)))
+        d.line(curve(sx0, ay, sx1, by), fill=rgba(WHITE, 22), width=S, joint="curve")
+
+    # Modules. The ones on the right edge that carry an answer are cyan.
+    gap = 5 * S
+    edge = [i for i, (x, y, w, h) in enumerate(cells) if x + w > lx1 - 2]
+    picks = sorted(rng.choice(edge, size=min(3, len(edge)), replace=False).tolist())
+    targets = [int(cols * f) for f in (0.22, 0.55, 0.86)]
+    for i, (x, y, w, h) in enumerate(cells):
+        box = [x + gap, y + gap, x + w - gap, y + h - gap]
+        if i in picks:
+            d.rounded_rectangle(box, radius=7 * S, fill=rgba(CYAN, 235))
+            continue
+        kind = rng.random()
+        d.rounded_rectangle(box, radius=7 * S, fill=rgba(WHITE, 9 + int(kind * 20)), outline=rgba(WHITE, 52), width=S)
+
+    # Cyan streams: each lit module answers in one column of the reading.
+    for i, c in zip(picks, targets):
+        x, y, w, h = cells[i]
+        ax, ay = x + w - gap, y + h / 2
+        bx, by = crest(c)
+        d.line([(ax, ay), (sx0, ay)], fill=rgba(CYAN, 225), width=2 * S)
+        d.line(curve(sx0, ay, sx1, by), fill=rgba(CYAN, 225), width=2 * S, joint="curve")
+        d.line([(sx1, by), (bx - 9 * S, by)], fill=rgba(CYAN, 225), width=2 * S)
+        r = 13 * S
+        d.ellipse([bx - r, by - r, bx + r, by + r], outline=rgba(CYAN, 120), width=S)
+
+    for c in range(cols):
+        px = rx0 + c * stepx
+        hgt = heights[c]
+        for r in range(rows):
+            py = y1 - r * stepy
+            if r < hgt - 1:
+                a = 46 + 120 * (r / max(1, hgt - 1)) ** 1.6
+                rad = 2.4 * S
+                d.ellipse([px - rad, py - rad, px + rad, py + rad], fill=rgba(WHITE, a))
+            elif r == hgt - 1:
+                rad = (5.2 if c in targets else 4.2) * S
+                d.ellipse([px - rad, py - rad, px + rad, py + rad], fill=rgba(CYAN, 255))
+            else:
+                rad = 1.1 * S
+                d.ellipse([px - rad, py - rad, px + rad, py + rad], fill=rgba(WHITE, 26))
+    finish(merge(img, over), "platform")
+
+
+ALL = {
+    "ai-solutions": art_ai,
+    "automation": art_automation,
+    "data-driven-solutions": art_data,
+    "tailored-software-development": art_software,
+    "technical-team-hiring": art_team,
+    "about": art_about,
+    "cta": art_cta,
+    "platform": art_platform,
+}
+
+
 if __name__ == "__main__":
-    for fn in (art_ai, art_automation, art_data, art_software, art_team, art_about, art_cta):
-        fn()
+    import sys
+
+    # No arguments renders the whole set; names render only those pieces.
+    for name in sys.argv[1:] or ALL:
+        ALL[name]()

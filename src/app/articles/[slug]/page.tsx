@@ -7,8 +7,8 @@ import { Cta } from "@/components/Cta";
 import { ParallaxImage } from "@/components/ParallaxImage";
 import { Reveal } from "@/components/Reveal";
 import { articles, getArticle } from "@/content/articles";
-import { getService } from "@/content/services";
-import { site } from "@/content/site";
+import { getCapability } from "@/content/capabilities";
+import { articlesPage, site } from "@/content/site";
 
 export const dynamicParams = false;
 
@@ -34,7 +34,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   const article = getArticle(slug);
   if (!article) notFound();
 
-  const service = getService(article.service);
+  const capability = article.capability ? getCapability(article.capability) : undefined;
   const date = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric" }).format(
     new Date(article.date),
   );
@@ -65,11 +65,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           </Reveal>
         </header>
 
-        {service && (
-          <div className="shell">
-            <ParallaxImage src={service.art} priority sizes="100vw" className="aspect-[4/3] w-full md:aspect-[21/9]" />
-          </div>
-        )}
+        <div className="shell">
+          <ParallaxImage src={article.art} priority sizes="100vw" className="aspect-[4/3] w-full md:aspect-[21/9]" />
+        </div>
 
         <div className="shell py-14 md:py-20">
           <div className="prose mx-auto max-w-[68ch]">
@@ -89,13 +87,14 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             )}
           </div>
 
-          {service && (
+          {capability && (
             <aside className="mx-auto mt-16 max-w-[68ch] rounded-[20px] border border-line bg-surface p-8">
-              <p className="text-sm text-muted">This article is about</p>
-              <p className="h3 mt-2">{service.name}</p>
-              <p className="mt-3 text-muted">{service.summary}</p>
-              <ArrowLink href={`/${service.slug}/`} className="mt-4">
-                See details<span className="sr-only">: {service.name}</span>
+              <p className="text-sm text-muted">{articlesPage.relatesTo}</p>
+              <p className="h3 mt-2 text-balance">{capability.name}</p>
+              <p className="mt-3 text-muted">{capability.summary}</p>
+              <ArrowLink href={`/${capability.slug}/`} className="mt-4">
+                {articlesPage.explore}
+                <span className="sr-only">: {capability.name}</span>
               </ArrowLink>
             </aside>
           )}

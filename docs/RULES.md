@@ -14,16 +14,17 @@ values; this file holds the constraints.
 ## Content
 
 6. All copy and page data live in `src/content`. Components do not hard-code copy.
-7. Do not invent clients, testimonials, team members, awards or numbers. Articles follow the same rule: no made-up statistics or case studies.
-8. Statistics shown on service pages are the ones on the live site and are still unsourced. Add a source before adding a new one.
+7. Do not invent clients, partners, testimonials, team members, awards or numbers. Partners are described only from their own published material, and their logos are used as supplied. Articles follow the same rule: no made-up statistics or case studies. Projects are described from their own decks and live sites only; market figures in those decks are not used until they have a source, and a prototype is never presented as live.
+8. Statistics shown on capability pages are the ones on the live site, and offer figures are the ones in the pitch deck. Both are still unsourced. Add a source before adding a new one.
 9. No em dashes or en dashes in visible copy. Use a hyphen, comma or full stop.
 10. No emoji in UI. Icons come from `@phosphor-icons/react` only.
-11. One label per intent. Contact intent is always "Book a meeting".
+11. One label per intent. Contact intent is always "Book a free discovery call".
+11a. Do not name the parent company that appears in the pitch footer anywhere on the site.
 12. Hero: headline of two lines or fewer on desktop, support text of 20 words or fewer, at most two actions.
 
 ## URLs and SEO
 
-13. Slugs never change: `/services`, `/ai-solutions`, `/automation`, `/data-driven-solutions`, `/tailored-software-development`, `/technical-team-hiring`, `/about-us`, `/contact-us`.
+13. Slugs never change: `/services`, `/ai-solutions`, `/tailored-software-development`, `/projects`, `/about-us`, `/contact-us`. The retired `/automation`, `/data-driven-solutions` and `/technical-team-hiring` stay as permanent redirects in `next.config.ts`; never remove them.
 14. Every page exports `metadata` with a unique title and description.
 15. One `h1` per page. Heading levels do not skip.
 
@@ -49,7 +50,7 @@ values; this file holds the constraints.
 30. Everything respects `prefers-reduced-motion`. Reduced motion must leave all content reachable.
 31. One marquee per page at most.
 31a. The custom pointer must never be the only pointer for touch, pen, keyboard or reduced-motion users, and never replaces the text cursor in form fields.
-31b. Scroll programmatically through `src/lib/scroll.ts`, so drift scrolling and native scrolling stay in step.
+31b. Scroll programmatically through `src/lib/scroll.ts`, so drift scrolling and native scrolling stay in step. Offsets come from CSS (`scroll-padding-top` on html, `scroll-margin-top` on targets), which both honour; never pass one in code.
 31c. A pinned (GSAP) element must sit inside a wrapper React owns, and its effect must clean up in `useLayoutEffect`, or page navigation crashes.
 32. Durations and easings come from the motion tokens.
 
@@ -65,7 +66,7 @@ values; this file holds the constraints.
 
 ## Performance
 
-40. Images go through `next/image` with explicit dimensions. Above-the-fold images set `priority`.
+40. Images go through `next/image` with explicit dimensions. Above-the-fold images set `priority`. Product screenshots never show personal data; crop it out.
 41. Canvas work pauses when off screen and when the tab is hidden.
 42. No new dependency without checking `package.json` first.
 43. Targets: LCP under 2.5s, CLS under 0.1, INP under 200ms.

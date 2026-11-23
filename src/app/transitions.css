@@ -2,10 +2,6 @@
    Variables live in motion.css. Colour variables are mapped to site tokens here. */
 
 :root {
-  --tabs-text-muted: var(--muted);
-  --tabs-text-active: var(--on-accent);
-  --tabs-bar-bg: var(--surface-2);
-  --tabs-pill-bg: var(--accent);
   --stagger-dur: 700ms;
   --stagger-distance: 18px;
   --stagger-stagger: 70ms;
@@ -45,51 +41,6 @@
   transition:
     transform var(--dropdown-close-dur) var(--dropdown-ease),
     opacity   var(--dropdown-close-dur) var(--dropdown-ease);
-}
-
-/* 16 Tabs sliding */
-.t-tabs {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 4px;
-  border-radius: 48px;
-  background: var(--tabs-bar-bg);
-}
-.t-tab {
-  position: relative;
-  appearance: none;
-  border: 0;
-  background: transparent;
-  height: 44px;
-  padding: 4px 18px;
-  font-weight: 500;
-  font-size: 0.9375rem;
-  color: var(--tabs-text-muted);
-  cursor: pointer;
-  border-radius: 48px;
-  z-index: 1;
-  white-space: nowrap;
-  transition: color var(--tabs-dur) var(--tabs-ease);
-}
-.t-tab:not([aria-selected="true"]):hover { color: var(--text); }
-.t-tab[aria-selected="true"] { color: var(--tabs-text-active); }
-.t-tabs-pill {
-  position: absolute;
-  top: 4px;
-  left: 0;
-  height: 44px;
-  width: 0;
-  background: var(--tabs-pill-bg);
-  border-radius: 48px;
-  transform: translateX(0);
-  transition:
-    transform var(--tabs-dur) var(--tabs-ease),
-    width     var(--tabs-dur) var(--tabs-ease);
-  will-change: transform, width;
-  z-index: 0;
-  pointer-events: none;
 }
 
 /* 18 Texts reveal. Lines take their delay from --i. */
@@ -272,8 +223,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .t-dropdown,
-  .t-tabs-pill,
-  .t-tab,
   .t-stagger-line,
   .t-acc-panel,
   .t-acc-panel-inner,

@@ -40,7 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <noscript>
-          <style>{`.t-stagger-line{opacity:1!important;transform:none!important;filter:none!important}`}</style>
+          <style>{`.t-stagger-line{opacity:1!important;transform:none!important;filter:none!important}.compare-us::before{transform:none!important}`}</style>
         </noscript>
       </head>
       <body>

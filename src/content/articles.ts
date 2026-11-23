@@ -7,8 +7,11 @@ export type Article = {
   slug: string;
   title: string;
   excerpt: string;
-  /** Slug of the service this article is about. */
-  service: string;
+  /** Short subject label shown above the title. */
+  topic: string;
+  art: string;
+  /** Slug of the capability the article relates to, if one fits. */
+  capability?: string;
   date: string;
   minutes: number;
   body: Block[];
@@ -24,7 +27,9 @@ export const articles: Article[] = [
     title: "Where to start with AI when you are not a tech company",
     excerpt:
       "Most businesses do not need a moonshot. They need one boring, repeated decision made faster and more consistently. Here is how we find it.",
-    service: "ai-solutions",
+    topic: "AI",
+    art: "/art/ai-solutions.webp",
+    capability: "ai-solutions",
     date: "2026-10-12",
     minutes: 4,
     body: [
@@ -51,7 +56,9 @@ export const articles: Article[] = [
     title: "What to automate first, and what to leave alone",
     excerpt:
       "Automation pays off fastest on the tasks people quietly hate. A short guide to picking the right ones and avoiding the expensive mistakes.",
-    service: "automation",
+    topic: "Automation",
+    art: "/art/automation.webp",
+    capability: "tailored-software-development",
     date: "2026-10-12",
     minutes: 4,
     body: [
@@ -77,7 +84,9 @@ export const articles: Article[] = [
     title: "Building dashboards people actually open",
     excerpt:
       "Plenty of companies have data and reports. Fewer have numbers that change what someone does on Monday. The difference is mostly in the questions.",
-    service: "data-driven-solutions",
+    topic: "Data and analytics",
+    art: "/art/data-driven-solutions.webp",
+    capability: "tailored-software-development",
     date: "2026-10-12",
     minutes: 4,
     body: [
@@ -104,7 +113,9 @@ export const articles: Article[] = [
     title: "Custom software or off the shelf? An honest way to decide",
     excerpt:
       "We build custom software for a living, and we still tell some clients to buy a product instead. Here is the test we use.",
-    service: "tailored-software-development",
+    topic: "Tailored software",
+    art: "/art/tailored-software-development.webp",
+    capability: "tailored-software-development",
     date: "2026-10-12",
     minutes: 4,
     body: [
@@ -130,7 +141,8 @@ export const articles: Article[] = [
     title: "How to make a dedicated technical team work for you",
     excerpt:
       "Adding outside developers can save a project or stall it. The difference usually comes down to a handful of habits in the first month.",
-    service: "technical-team-hiring",
+    topic: "Embedded teams",
+    art: "/art/technical-team-hiring.webp",
     date: "2026-10-12",
     minutes: 4,
     body: [

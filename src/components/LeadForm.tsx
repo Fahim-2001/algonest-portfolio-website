@@ -2,57 +2,21 @@
 
 import { useRef, useState } from "react";
 import { WarningCircle } from "@phosphor-icons/react";
-import { site } from "@/content/site";
-
-type FieldDef = {
-  name: string;
-  label: string;
-  type: "text" | "email" | "textarea" | "select";
-  required?: boolean;
-  autoComplete?: string;
-  options?: string[];
-  half?: boolean;
-};
-
-const FORMS: Record<"contact" | "team", { subject: string; submit: string; fields: FieldDef[] }> = {
-  contact: {
-    subject: "Website enquiry",
-    submit: "Send message",
-    fields: [
-      { name: "firstName", label: "First name", type: "text", required: true, autoComplete: "given-name", half: true },
-      { name: "lastName", label: "Last name", type: "text", required: true, autoComplete: "family-name", half: true },
-      { name: "email", label: "Email", type: "email", required: true, autoComplete: "email" },
-      { name: "subject", label: "Subject", type: "text" },
-      { name: "message", label: "Comment or message", type: "textarea" },
-    ],
-  },
-  team: {
-    subject: "Technical team requirements",
-    submit: "Send requirements",
-    fields: [
-      { name: "firstName", label: "First name", type: "text", required: true, autoComplete: "given-name", half: true },
-      { name: "lastName", label: "Last name", type: "text", required: true, autoComplete: "family-name", half: true },
-      { name: "company", label: "Company name", type: "text", autoComplete: "organization" },
-      { name: "email", label: "Email", type: "email", required: true, autoComplete: "email" },
-      { name: "project", label: "Tell us about your business or project", type: "textarea" },
-      { name: "teamSize", label: "How many people do you need?", type: "select", options: ["One", "3-4", "5-7", "8-10", "10+"] },
-      { name: "notes", label: "Anything else we should know?", type: "textarea" },
-    ],
-  },
-};
+import { contact, site, type FieldDef } from "@/content/site";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_FORM_ENDPOINT;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const def = contact.form;
 
 function validate(field: FieldDef, value: string) {
   const v = value.trim();
-  if (field.required && !v) return `Enter your ${field.label.toLowerCase()}.`;
-  if (field.type === "email" && v && !EMAIL_RE.test(v)) return "Enter an email address like name@company.com.";
+  if (field.required && !v) return def.errors.required.replace("{label}", field.label.toLowerCase());
+  if (field.type === "email" && v && !EMAIL_RE.test(v)) return def.errors.email;
   return "";
 }
 
-export function LeadForm({ variant }: { variant: "contact" | "team" }) {
-  const def = FORMS[variant];
+/** Discovery-call request. Posts to NEXT_PUBLIC_FORM_ENDPOINT, or opens an email draft without one. */
+export function LeadForm() {
   const formRef = useRef<HTMLFormElement>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "drafted" | "failed">("idle");
@@ -104,7 +68,7 @@ export function LeadForm({ variant }: { variant: "contact" | "team" }) {
       const res = await fetch(ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ form: variant, ...values }),
+        body: JSON.stringify({ form: "discovery-call", ...values }),
       });
       if (!res.ok) throw new Error(String(res.status));
       setStatus("sent");
@@ -114,6 +78,7 @@ export function LeadForm({ variant }: { variant: "contact" | "team" }) {
   }
 
   if (status === "sent" || status === "drafted") {
+    const done = status === "sent" ? def.sent : def.drafted;
     return (
       <div className="rounded-[20px] border border-line bg-surface p-8 md:p-12" role="status">
         <span className="t-success-check text-accent-text" data-state="in" aria-hidden="true">
@@ -122,14 +87,12 @@ export function LeadForm({ variant }: { variant: "contact" | "team" }) {
             <path d="M14 25l7 7 13-15" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </span>
-        <h3 className="h3 mt-6">{status === "sent" ? "Message sent." : "Your email draft is ready."}</h3>
+        <h3 className="h3 mt-6">{done.heading}</h3>
         <p className="mt-3 max-w-[46ch] text-muted">
-          {status === "sent"
-            ? "Thank you. We will reply to the email address you gave us."
-            : `Your email app should have opened with the message filled in. Press send there to reach us. If nothing opened, write to ${site.email}.`}
+          {status === "sent" ? done.body : `${done.body} ${site.email}.`}
         </p>
         <button type="button" onClick={() => setStatus("idle")} className="btn btn-secondary mt-8">
-          Write another message
+          {def.again}
         </button>
       </div>
     );
@@ -137,8 +100,8 @@ export function LeadForm({ variant }: { variant: "contact" | "team" }) {
 
   return (
     <form ref={formRef} onSubmit={onSubmit} noValidate className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
-      {def.fields.map((f) => {
-        const id = `${variant}-${f.name}`;
+      {def.fields.map((f: FieldDef) => {
+        const id = `lead-${f.name}`;
         const error = errors[f.name];
         const common = {
           id,
@@ -158,14 +121,14 @@ export function LeadForm({ variant }: { variant: "contact" | "team" }) {
           <div key={f.name} className={`t-input-wrap grid gap-2 ${f.half ? "" : "sm:col-span-2"}`}>
             <label htmlFor={id} className="font-medium">
               {f.label}
-              {!f.required && <span className="ml-2 text-sm font-normal text-muted">Optional</span>}
+              {!f.required && <span className="ml-2 text-sm font-normal text-muted">{def.optional}</span>}
             </label>
             <div className={`t-input ${error ? "is-error" : ""}`} data-field={f.name}>
               {f.type === "textarea" ? (
                 <textarea {...common} rows={4} />
               ) : f.type === "select" ? (
                 <select {...common} defaultValue="">
-                  <option value="">Select a team size</option>
+                  <option value="">{f.placeholder}</option>
                   {f.options?.map((o) => (
                     <option key={o} value={o}>
                       {o}
@@ -194,7 +157,7 @@ export function LeadForm({ variant }: { variant: "contact" | "team" }) {
           <p role="alert" className="mb-4 flex items-start gap-1.5 text-danger">
             <WarningCircle size={18} weight="fill" aria-hidden="true" className="mt-1 shrink-0" />
             <span>
-              The message could not be sent. Try again, or email us at{" "}
+              {def.failed}{" "}
               <a href={`mailto:${site.email}`} className="underline">
                 {site.email}
               </a>
@@ -203,7 +166,7 @@ export function LeadForm({ variant }: { variant: "contact" | "team" }) {
           </p>
         )}
         <button type="submit" disabled={status === "sending"} className="btn btn-primary w-full sm:w-auto">
-          {status === "sending" ? "Sending..." : def.submit}
+          {status === "sending" ? def.sending : def.submit}
         </button>
       </div>
     </form>

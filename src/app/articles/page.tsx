@@ -4,21 +4,19 @@ import Link from "next/link";
 import { Cta } from "@/components/Cta";
 import { Reveal } from "@/components/Reveal";
 import { articles, type Article } from "@/content/articles";
-import { getService } from "@/content/services";
 
 export const metadata: Metadata = {
   title: "Articles",
   description:
-    "Plain-spoken notes from AlgoNest on AI, automation, data, custom software and working with dedicated technical teams.",
+    "Plain-spoken notes from AlgoNest on AI, automation, data, tailored software and working with an embedded technical team.",
 };
 
 const i = (n: number) => ({ "--i": n }) as React.CSSProperties;
 
 function Meta({ article }: { article: Article }) {
-  const service = getService(article.service);
   return (
     <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted">
-      <span className="text-accent-text">{service?.name}</span>
+      <span className="text-accent-text">{article.topic}</span>
       <span>{article.minutes} min read</span>
     </p>
   );
@@ -26,7 +24,6 @@ function Meta({ article }: { article: Article }) {
 
 export default function ArticlesPage() {
   const [lead, ...rest] = articles;
-  const leadArt = getService(lead.service)?.art ?? "";
 
   return (
     <>
@@ -34,8 +31,8 @@ export default function ArticlesPage() {
         <Reveal amount={0}>
           <h1 className="display t-stagger-line">Articles</h1>
           <p className="lead t-stagger-line mt-6" style={i(1)}>
-            Notes from our work on AI, automation, data, custom software and dedicated teams. Written for the people who
-            run the business, not only the people who write the code.
+            Notes from our work on AI, automation, data, tailored software and embedded teams. Written for the people
+            who run the business, not only the people who write the code.
           </p>
         </Reveal>
       </section>
@@ -47,7 +44,7 @@ export default function ArticlesPage() {
         >
           <div className="relative aspect-[4/3] overflow-hidden bg-slate md:aspect-auto md:min-h-[420px]">
             <Image
-              src={leadArt}
+              src={lead.art}
               alt=""
               fill
               priority
@@ -71,7 +68,7 @@ export default function ArticlesPage() {
               >
                 <div className="relative aspect-[16/9] overflow-hidden bg-slate">
                   <Image
-                    src={getService(article.service)?.art ?? ""}
+                    src={article.art}
                     alt=""
                     fill
                     sizes="(min-width: 768px) 50vw, 100vw"

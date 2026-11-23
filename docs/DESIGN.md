@@ -91,15 +91,32 @@ is the only blurred surface (with a solid fallback under reduced transparency).
 
 | Section | Family |
 |---|---|
-| Hero | Asymmetric split with live canvas |
+| Hero | Asymmetric split with live canvas, offer strip along its foot |
+| Reality | Three-column ledger between hairlines |
 | Statement | Full-width scroll-scrubbed text |
-| Services | Pinned horizontal pan |
-| Capabilities | Marquee |
-| Process | Sticky heading with scroll-drawn timeline |
-| Why AlgoNest | Asymmetric bento |
+| Our services | Focus panel, then five sticky stacked cards (split card per service) |
+| What we build | Marquee |
+| Projects | Index list with a pinned preview frame |
+| Process | Pinned horizontal pan with a progress rail |
+| Why AlgoNest | Asymmetric bento, then a comparison table |
+| Partners | Spotlight card (orbit panel plus text) |
+| Global coverage | Full-width dot map with place names, then a three-column legend |
 | CTA | Centred, zoom-parallax artwork |
 
 No family repeats on a page. Eyebrow labels: hero none, at most one per three sections.
+
+### Project showcase (`/projects/`)
+
+| Section | Family |
+|---|---|
+| Hero | Asymmetric split: headline, counts, a fan of three framed product screenshots |
+| Projects | Sticky index with chapters (index left, one chapter per project right) |
+| CTA | Centred, zoom-parallax artwork |
+
+Each chapter: meta line (number, status chip, sector), name, tagline, client when
+there is one, the product in a browser frame, why it was built, the problems it
+solves, what it does, the services behind it, and its one action (visit the live
+build, or ask for a walkthrough of a prototype).
 
 ## 6. Motion
 
@@ -119,18 +136,23 @@ Every animation has a job:
 |---|---|---|
 | Staggered text reveal | Hero, page heroes | Establish reading order |
 | Points forming the logo, opening into an orbiting nest, and regrouping | Home hero canvas | Show the brand idea: scattered parts nest into structure |
-| Looping motion graphic per service (signals through a network, items riding streamlines, a live dot-matrix reading, modules assembling, team members joining) | Service hero panels (`HeroMotion`) | Explain what the service does before any text is read |
+| Looping motion graphic per capability and process step (signals through a network, a platform feeding a live chart, a dot-matrix reading, modules assembling, items riding streamlines, team members joining) | Capability heroes, capability stages, process panels (`HeroMotion`) | Explain what the service does before any text is read |
+| Prototype scenes: invoices matched to payments with a score, one flagged (`ledger`, Kvitt); a member's week filling a ring and syncing to a gym that nudges drifting members (`fitness`, FitSync) | Project chapters without a public build | Show what an unreleased product does |
+| Dot-map coverage: a line drawn from Bangladesh to the US and to Australia, a ripple spreading through the land where each arrives (`coverage`) | Home global coverage | Show where the team works and the markets it serves |
+| Preview crossfade (one still frame per project) | Home projects list | Preview before click; follows the mouse and keyboard focus |
+| Index marker sliding to the chapter in view | Project showcase index | Show where you are among the projects |
 | Drift scrolling (Lenis, wheel input eases to its target) | Global, mouse and trackpad | Make the scroll-linked effects read as continuous |
 | Custom pointer (dot plus trailing ring that grows over links) | Global, mouse only | Show what is clickable |
 | Back-to-top button with progress ring | Global, after the first screen | Quick return on long pages |
 | Word-by-word scrub | Home statement, about pull line | Pace a long sentence |
-| Pinned horizontal pan | Home services | Give five services equal weight in one viewport |
-| Scroll-drawn timeline | Process | Show sequence and progress |
-| Sliding tab pill | Process switch | Show which process is selected |
+| Sticky stacked stages | Home services | Give each of the five services equal weight, one after the other |
+| Pinned horizontal pan with filling rail | Home process | Show the four steps as a sequence in time |
+| Comparison column fill | Why AlgoNest table | Draw the eye to the AlgoNest column once |
+| Orbiting rings | Partners logo | Place the partner inside the nest |
 | Sticky stacking cards | Service problems | Keep the previous problem in view as context |
-| Spinning counter | Statistics | Draw the eye to the figure once |
+| Spinning counter | Statistics, offer strip | Draw the eye to the figure once |
 | Pointer tilt | Why AlgoNest bento | Hover feedback |
-| Cursor-following artwork | Services index rows | Preview before click |
+| Cursor-following artwork | Capabilities index rows | Preview before click |
 | Zoom parallax | CTA | Signal the end of the page |
 | Magnetic button | CTA | Feedback on the one action that matters |
 | Header hide and show | Global | Return the viewport while reading |
@@ -140,14 +162,16 @@ Every animation has a job:
 Rules
 - Animate `transform`, `opacity`, `filter` and `clip-path` only.
 - No `window` scroll listeners. Use Motion `useScroll`, GSAP ScrollTrigger or IntersectionObserver.
-- GSAP is used in one component (horizontal pan). Motion and GSAP never share a component.
+- GSAP is used in one component (`HorizontalPan`, used by the process). Motion and GSAP never share a component.
 - The custom pointer is off for touch, pen and reduced motion, and the system text cursor is kept inside form fields.
-- Under `prefers-reduced-motion: reduce`: pins become normal flow, the pan becomes a native horizontal scroller, every canvas draws one static frame, drift scrolling and the custom pointer switch off, reveals show immediately, the marquee stops.
+- Under `prefers-reduced-motion: reduce`: pins become normal flow, the pan becomes a native horizontal scroller, every canvas draws one static frame, drift scrolling and the custom pointer switch off, reveals show immediately, the marquee and the partner orbit stop.
 
 ## 7. Components
 
 - Button: primary (accent fill), secondary (hairline), link (arrow slides on hover). Press state scales to 0.98. Focus ring 2px `--accent-text` with 2px offset.
-- Header: floating pill, 64px, hides on scroll down. Services dropdown opens on click and closes on Escape or outside click.
+- Header: floating pill, 64px, hides on scroll down. Our Services dropdown (two focuses, then all five services) opens on click and closes on Escape or outside click. Links: Our Services, Projects, Articles, About Us, Contact Us. The full row shows from 1280px; below that the menu button opens the full-screen panel.
+- Flags: simple SVG files in `public/flags` (3:2, hairline border, 72px wide), shown with the country named beside them. They are the one place several colours appear, because a flag is information, not decoration.
+- Browser frame: three dots and an address pill (globe for a public URL, lock for a private prototype) over a 16:9 visual.
 - Mobile menu: full-screen panel, staggered links, focus trapped, body scroll locked.
 - Form field: label above, helper optional, error below, validate on blur, re-validate on input after an error.
 - Accordion: native button with `aria-expanded`, grid-rows height animation.
@@ -158,7 +182,20 @@ Rules
 No stock illustration. Artwork is generated in the brand palette (canvas-design
 skill) on one visual idea, "Lattice Calm": dense, patient fields of fine marks on
 slate, crossed by one or two cyan ribbons at the logo's angle. One piece per
-service, one for About, one for the CTA. Files live in `public/art`.
+capability (`platform.webp` covers capability 02), plus the earlier service pieces
+reused by articles and the bento, one for About, one for the CTA.
+Partner logos live in `public/partners` and are shown exactly as supplied. Files live in `public/art`.
+
+Projects are shown by what they really look like. A project with a public build
+gets a screenshot of it (`public/projects`, WebP, 16:9 framing), cropped only to
+remove personal data such as a signed-in user's name, and described in its alt
+text. A project without one shows its `HeroMotion` scene in the same frame,
+with the address bar reading "Prototype, not public yet". Frames are always the
+browser chrome in `ProjectFrame.tsx`.
+
+The coverage map is drawn from `src/content/world.ts`: a dot grid rasterised once
+from Natural Earth 110m land data (public domain). The panel keeps the map's own
+shape so the place names, positioned in percentages, land on their markers.
 
 Movement statement: `docs/art-philosophy.md`.
 
