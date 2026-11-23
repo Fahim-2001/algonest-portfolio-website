@@ -6,8 +6,12 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/** Pin only where a whole panel fits on screen and motion is welcome. */
-const PIN_QUERY = "(min-width: 1024px) and (min-height: 700px) and (prefers-reduced-motion: no-preference)";
+/**
+ * Pin only where a whole panel fits on screen and motion is welcome. 580px is
+ * the shortest window the compact layout in globals.css ("short screens") fits,
+ * which covers a 1366x768 laptop and Windows display scaling of 150%.
+ */
+const PIN_QUERY = "(min-width: 1024px) and (min-height: 580px) and (prefers-reduced-motion: no-preference)";
 
 /**
  * Pins the section and turns vertical scroll into a horizontal pan, with an

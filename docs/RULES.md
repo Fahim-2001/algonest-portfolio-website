@@ -49,6 +49,7 @@ values; this file holds the constraints.
 29. Every effect that subscribes, observes or animates returns a cleanup.
 30. Everything respects `prefers-reduced-motion`. Reduced motion must leave all content reachable.
 31. One marquee per page at most.
+30a. A scroll effect that depends on window size is tested at 1440x900, 1366x650 and 1280x600, not only on a large monitor. If the effect cannot fit, give it a compact layout before switching it off.
 31a. The custom pointer must never be the only pointer for touch, pen, keyboard or reduced-motion users, and never replaces the text cursor in form fields.
 31b. Scroll programmatically through `src/lib/scroll.ts`, so drift scrolling and native scrolling stay in step. Offsets come from CSS (`scroll-padding-top` on html, `scroll-margin-top` on targets), which both honour; never pass one in code.
 31c. A pinned (GSAP) element must sit inside a wrapper React owns, and its effect must clean up in `useLayoutEffect`, or page navigation crashes.

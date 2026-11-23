@@ -4,7 +4,7 @@ import { createRef, Fragment, useEffect, useMemo, useRef, useState, type ReactNo
 import { motion, useScroll, useTransform, type MotionStyle } from "motion/react";
 
 /** Same condition as `.stage` in globals.css: stack only where a whole card fits. */
-const STACK_QUERY = "(min-width: 1024px) and (min-height: 760px) and (prefers-reduced-motion: no-preference)";
+const STACK_QUERY = "(min-width: 1024px) and (min-height: 580px) and (prefers-reduced-motion: no-preference)";
 /** Where the second card comes to rest (matches the CSS top offset). */
 const REST = "start 122px";
 

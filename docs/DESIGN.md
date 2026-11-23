@@ -164,6 +164,7 @@ Rules
 - No `window` scroll listeners. Use Motion `useScroll`, GSAP ScrollTrigger or IntersectionObserver.
 - GSAP is used in one component (`HorizontalPan`, used by the process). Motion and GSAP never share a component.
 - The custom pointer is off for touch, pen and reduced motion, and the system text cursor is kept inside form fields.
+- The pinned process and the stacked service cards need a window at least 1024px wide and 580px tall (a 1366x768 laptop and Windows display scaling of 150% both qualify). From 580 to 760px tall they use a compact layout (rules at the end of `globals.css`); above that, the roomy one. Below those sizes they fall back to normal flow, and the pan to a native horizontal scroller.
 - Under `prefers-reduced-motion: reduce`: pins become normal flow, the pan becomes a native horizontal scroller, every canvas draws one static frame, drift scrolling and the custom pointer switch off, reveals show immediately, the marquee and the partner orbit stop.
 
 ## 7. Components

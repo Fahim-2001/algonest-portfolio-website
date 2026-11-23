@@ -242,7 +242,7 @@ body {
   transform-origin: top center;
 }
 .stage-stack > .stage + div { margin-top: 32px; }
-@media (min-width: 1024px) and (min-height: 760px) and (prefers-reduced-motion: no-preference) {
+@media (min-width: 1024px) and (min-height: 580px) and (prefers-reduced-motion: no-preference) {
   .stage {
     position: sticky;
     top: calc(104px + var(--i, 0) * 18px);
@@ -473,4 +473,19 @@ html.has-cursor select { cursor: pointer; }
 
 @media (prefers-reduced-transparency: reduce) {
   :root { --header-bg: var(--surface); }
+}
+
+/* Short screens. A laptop window is often only 600 to 700px tall, so the pinned
+   process and the stacked service cards switch to a tighter layout there instead
+   of switching off. Outside the cascade layers so they beat the utility classes.
+   The cut-off (760px) is above the 580px minimum the effects need. */
+@media (min-width: 1024px) and (max-height: 760px) {
+  .stage { top: calc(88px + var(--i, 0) * 12px) !important; }
+  .stage-card { min-height: 0 !important; }
+  .stage-body { padding: 1.75rem !important; gap: 1.25rem !important; }
+  .pan-title { max-width: none !important; font-size: 2rem !important; }
+  .pan-wrap { margin-top: 1.5rem !important; }
+  .pan-rail-shell { margin-top: 1.25rem !important; }
+  .pan-scene { aspect-ratio: 5 / 1.6 !important; }
+  .pan-body { padding: 1.25rem !important; gap: 0.625rem !important; }
 }

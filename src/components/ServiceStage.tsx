@@ -25,11 +25,11 @@ export function ServiceStage({
   return (
     <article
       aria-labelledby={`stage-${s.id}`}
-      className={`grid overflow-hidden rounded-[20px] border border-line bg-surface lg:min-h-[min(500px,calc(100dvh-250px))] ${
+      className={`stage-card grid overflow-hidden rounded-[20px] border border-line bg-surface lg:min-h-[min(500px,calc(100dvh-250px))] ${
         flip ? "lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]" : "lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]"
       }`}
     >
-      <div className={`flex flex-col gap-7 p-7 md:p-10 xl:p-12 ${flip ? "lg:order-2" : ""}`}>
+      <div className={`stage-body flex flex-col gap-7 p-7 md:p-10 xl:p-12 ${flip ? "lg:order-2" : ""}`}>
         <div className="flex items-center justify-between gap-4">
           <p className="font-mono text-sm text-accent-text">
             {String(position).padStart(2, "0")}

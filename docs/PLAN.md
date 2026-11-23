@@ -270,3 +270,12 @@ page strings in `projectsPage` and `home.projects` in `src/content/site.ts`.
 ## 13. Update 6: Global coverage on the home page (2026-11-24)
 
 A new section after Our Partners: a dot map of the world, a line from Bangladesh to the United States and to Australia, and a three-column legend (flag, country, role, one line). The map is decorative; the legend says the same in words. Notes come from the owner's brief (works from Bangladesh, serves the US and Australia) and from AIO Tech Solutions' own site (offices in Sydney and Dhaka). No office, client count or time-zone claim is made. The land data is public domain; see `src/content/world.ts`.
+
+## 14. Update 7: scroll effects on laptops, vercel.json (2026-11-24)
+
+- **Problem:** on the Vercel site the pinned horizontal process and the stacked service cards only ran in windows at least 700px (pan) and 760px (cards) tall. A 1366x768 laptop window is about 650px tall, and Windows scaling of 125% or 150% gives 730 and 590px, so on many laptops both effects were off. They were off by design, not broken: the live site pins and stacks correctly at 1440x900 and has no console errors.
+- **Fix:** both effects now start at 580px tall, with a compact layout (smaller scenes and padding, tighter card offsets) between 580 and 760px so every panel stays fully visible. Checked at 1440x900, 1366x650 and 1280x600.
+- **Still off by design:** touch devices and windows under 1024px wide (the pan is a swipeable row, the cards a plain stack), and when the system asks for reduced motion.
+- **`vercel.json`:** pins the framework, `npm ci` and `npm run build`, adds security headers to every page, and a one-day cache with a week of stale-while-revalidate for `/art`, `/projects`, `/partners`, `/flags` and the logo. Redirects stay in `next.config.ts`, where Vercel already applies them.
+- **Vercel setting to check:** set `NEXT_PUBLIC_FORM_ENDPOINT` in the project's environment variables; without it the forms open an email draft instead of sending.
+
